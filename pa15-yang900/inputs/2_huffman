@@ -1,0 +1,25 @@
+
+/*
+//create linked list
+ListNode * sortedNodeList(long * asciiCount){
+  ListNode * head = NULL;
+  ListNode * * current;
+  ListNode * tempArr = NULL;
+
+  for(int i = 0;i < ASCII_SIZE;i++){
+    if(asciiCount[i] != 0){
+      current = sort(&head, asciiCount[i]);
+      tempArr = *current;
+      (*current) = malloc(sizeof(ListNode));
+      (*current) -> ptr = malloc(sizeof(TreeNode));
+      (*current) -> ptr -> label = i;
+      (*current) -> ptr -> count = asciiCount[i];
+      (*current) -> ptr -> left = NULL;
+      (*current) -> ptr -> right = NULL;
+      (*current) -> next = tempArr;
+    }
+  }
+  return head;
+}
+*/
+

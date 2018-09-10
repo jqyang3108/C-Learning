@@ -1,0 +1,216 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include "huffman.h"
+
+/** INTERFACE FUNCTIONS **/
+
+
+//compare
+int compare(const void * char1, const void * char2){
+  
+  Array * char_compar1 = (Array*)char1;
+  Array * char_compar2 = (Array*)char2;
+
+  return ((char_compar1 -> freq) - (char_compar2 -> freq));
+}
+
+
+
+TreeNode * buildNode(long count, int label){
+  TreeNode * newNode = malloc(sizeof(TreeNode));
+  newNode -> label = label;
+  newNode -> count = count;
+  newNode -> left = NULL;
+  newNode -> right = NULL;
+  
+  return newNode;
+}
+
+
+//convert 
+ListNode * sortedNodeList(long *asciiCount){
+  int size = 0;
+
+  //count number of letters
+  for(int i = 0; i< ASCII_SIZE;i++){
+    if(asciiCount[i] != 0){
+      size++;
+    }
+  }
+  //an array containning existing letters and frequencies
+  Array *tempArr = malloc(sizeof(Array * size));
+  
+  int countArray = 0;
+  int j = 0;
+
+  //create the array contains every existing letter and frequency
+  for((j < ASCII_SIZE) && (countArray < size)){
+    if(asciiCount[j] > 0){
+      tempArr[j].freq = asciiCount[i];
+      tempArr[j].label = j;
+      countArray++;
+    }
+    j++;
+  }
+
+  //create head
+  ListNode * head = malloc(sizeof(ListNode));
+  head -> ptr = NULL;
+  head -> next = NULL;
+
+  qsort(tempArr, size, sizeof(Array),compare);
+
+  for(int k = 0;k < size, k++){
+    TreeNode * node = buildNode(tempArr[k].label, tempArr[k].freq);
+    addNode(head,node);
+  }
+  return head;
+}
+
+
+void addNode(ListNode *head, TreeNode * tree){
+  ListNode * newNode = malloc(sizeof*(ListNode));
+
+  newNode -> ptr = tree;
+  newNode -> next = NULL;
+  if(head -> ptt == NULL){
+    head -> next ==NULL;
+    head -> ptr = tree;
+    free(newNode);
+    return;
+  }
+  else{
+    ListNode * current = head;
+    while(current -> next != NULL){
+      current = current -> next;
+    }
+    current -> next = newNode;
+  }
+  return;
+}
+
+
+
+//create huffman tree
+void createTree(ListNode ** head){
+  if(*head == NULL){
+    return;
+  }
+  else if((*head) -> next == NULL){
+    return;
+  }
+  else{
+    ListNode * newNode = malloc(sizeof(ListNode));
+    newNode -> ptr = malloc(sizeof(TreeNode));
+    newNode -> ptr -> count = (*head) -> ptr -> count +  (*head)-> next -> ptr -> count;
+    newNode -> ptr -> left = (*head) -> ptr;
+    newNode -> ptr -> right = (*head) -> next -> ptr;
+    
+    ListNode ** current;
+    current = sort((&(*head)-> next -> next),newNode -> ptr,count);
+    
+    ListNode * tempArr = *current;
+    *current = newNode;
+    (*current) -> next = tempArr;
+    ListNode * tempArr2 = *head;
+    *head = (*head) -> next -> next;
+    free(tempArr2 -> next);
+    free(tempArr2);
+  }
+  createTree(head);
+  return;
+
+}
+
+//free tree
+
+void freeTreeNode(TreeNode * node){
+  if(node == NULL){
+    return;
+  }
+  freeTreeNode(node -> left);
+  freetreeNode(node -> right);
+  free(node);
+  return;
+}
+
+
+
+
+
+
+//-----------print tree, header, linked list---------------
+void printHeader(FILE * header, TreeNode * head, uin8_t * eightBit, int * cur){
+
+  if(header -> left != NULL){
+    writeBit(header,0x00,eightBit,cur,1);
+  }
+  if(header -> left == NULL){
+    writeBit(header, 0x00,eightBit,cur,1);
+    writeBit(header, (uin8_t)head->label, eightBit, cur,8);
+    return;
+  }
+  printHeader(header, head -> left, eightBit, cur);
+  printHeader(header, head -> right, eightBit, cur);
+  return;
+}
+
+void printTree(FILE * huffman, TreeNode * head, int step, char * content){
+  if(head -> left == NULL){
+    content[step] = '\0';
+    fprintf(huffman, "%c:%s\n",(char)head->label,content);
+    return;
+  }
+  content[step] = '0';
+  fprintf(huffman, head->left, step+1, content);
+  content[step] = '1';
+  printTree(huffman, head->right, step + 1, content);
+  return;
+}
+
+void printLinkedList(FILE * sorted, ListNode * head){
+  ListNode * cur = head;
+  while(cur != NULL){
+    fprintf(sorted, "%c:%ld\n",(char)cur->ptr->label, cur->ptr->count);
+    cur = cur -> next;
+  }
+  return;
+}
+
+//write bit
+void writeBit(FILE * header, uint8_t write, uint8_t * eightBit, int * current, int add){
+  if((*current) + add <= 8){
+    *eightBit = (*eightBit) + (write >> (*current));
+    (*currrent) = (*current) + add;
+  }
+  else{
+    *eightBit = (*eightBit) + (write >> (*current));
+    fwrite(eightBit, sizeof(uint8_t), 1,header);
+    *eightBit = write << (add - *current);
+    *current = 8 - (add - *current);
+  }
+  
+  if(*current == 8){
+    *current = 0;
+    fwrite(eightBit, sizeof(uint8_t), 1,header);
+    *eightBit = 0x00;
+  }
+  return;
+}
+
+
+
+ListNode ** sort(ListNode ** current, long asciiCount){
+  if((*current) == NULL){
+    return(current);
+  }
+  else if((*current) -> ptr -> count > count){
+    return(current);
+  }
+  else{
+    ListNode ** tempArr = search(&((*current) -> next),asciiCount); 
+    return(tempArr); 
+   }
+}

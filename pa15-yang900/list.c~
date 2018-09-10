@@ -1,0 +1,224 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include "list.h"
+
+/** INTERFACE FUNCTIONS **/
+
+
+
+PathLL * buildPaths() {
+	PathLL * retval = malloc(sizeof(PathLL));
+	retval->head = NULL;
+	return retval;
+}
+
+void freePaths(PathLL * p) {
+
+
+  if(p -> head -> next != NULL)
+    {
+      PathNode *temp = p -> head;
+      PathNode *temp2 = NULL;
+
+      while(temp != NULL)
+	{
+	  temp2 = temp -> next;
+	  freeNode(temp);
+	  temp = temp2;
+	}
+    }
+  free(p);
+}
+
+PathNode * buildNode(char * path) {
+
+  //allocate memory
+  PathNode *build = malloc(sizeof(PathNode));                     
+  build -> path = malloc(strlen(path) + 1);               
+  build -> next = NULL;
+			
+  //copy path
+  strcpy(build -> path, path);
+  return build;
+}
+
+void freeNode(PathNode * p) {
+
+  free(p -> path);
+  free(p);
+}
+
+bool addNode(PathLL * paths, char * path) {
+       
+  if(containsNode(paths,path) == true)
+    {
+      return false;
+    }
+  else
+    {
+      PathNode *newNode = buildNode(path);
+      PathNode *check = paths -> head;
+      PathNode *prev = NULL;     
+      while(newNode -> next  == NULL && check != NULL)
+	{
+	  if(strlen(check -> path) < strlen (newNode -> path))
+	    {
+	      prev = check;
+	      check = check -> next;
+	    }
+	  else if(strlen(check -> path) > strlen(newNode -> path))
+	    {
+	      if(prev == NULL)
+		{
+		  paths -> head = newNode;
+		  newNode -> next = check;
+		}
+	      else
+		{
+		  prev -> next = newNode;
+		  newNode -> next = check;
+		}
+	    }
+	  else
+	    {
+	      if(turns(check -> path) < turns(newNode -> path))
+		{
+		  prev = check;
+		  check = check -> next;
+		}
+	      else if(turns(check -> path) > turns(newNode -> path))
+		{
+		  if(prev == NULL)
+		    {
+		      paths -> head = newNode;
+		      newNode -> next = check;
+		    }
+		  else
+		    {
+		      prev -> next = newNode;
+		      newNode -> next = check;
+		    }
+		}
+		else
+		  {
+		    if(strcmp(check -> path, newNode -> path) < 0)
+		      {
+			prev = check;
+			check = check -> next;
+		      }
+		    else
+		      {
+			if(prev == NULL)
+			  {
+			    paths -> head = newNode;
+			    newNode -> next = check;
+			  }
+			else
+			  {
+			    prev -> next = newNode;
+			    newNode -> next = check;
+			  }
+		      }
+		  }		   
+	    }	
+	}		       		
+      
+      if(check == NULL)
+	{
+	  if(prev == NULL)
+	    {
+	      paths -> head = newNode;
+	    }
+	  else
+	    {
+	      prev -> next = newNode;
+	    }
+	}
+    }
+  return true;	   
+}
+
+
+bool removeNode(PathLL * paths, char * path) {
+
+  PathNode *check = paths -> head;  
+  PathNode *prev;
+  while(check != NULL)
+    {
+      if(strcmp(check -> path, path) == 0)
+	{
+	  if(prev == NULL)
+	    {
+	      paths -> head = paths -> head -> next;
+	    }
+	  else
+	    {
+	      prev -> next = check -> next;
+	    }
+	  freeNode(check);
+	  return true;
+	}
+      prev = check;
+      check = check -> next;
+    }
+  return false;
+}
+
+bool containsNode(PathLL * paths, char * path) {
+
+  PathNode *check = paths -> head;
+
+  /*empty list check
+  if(paths -> head == NULL)
+    {
+      return false;
+    }
+  */
+  while(check !=  NULL)
+    {
+      if(strcmp((check -> path), path) == 0)
+	{
+	  return true;
+	}
+      check = check -> next;	  
+    }
+  return false; 
+}
+
+
+void printPaths(PathLL * paths, FILE * fptr) {
+  PathNode * curr = paths->head;
+  int i = 0;
+  while (curr != NULL) {
+    fprintf(fptr, "Path %2d: %s\n", i, curr->path);
+    i++;
+    curr = curr->next;
+  }
+}
+
+
+
+int turns(char * path){
+   
+  int length = 0;
+  int cur = path[0];
+  int count = 0;
+  
+  while(cur != '\0')
+    {
+      length ++;
+      cur = path[length];
+    }
+  for(int i = 0; i < length; i++)
+    {
+      if(path[i] != path[i+1])
+	{
+	  count++;
+	}
+    }
+  printf("\n turn: %d",count);
+  
+  return count;
+}

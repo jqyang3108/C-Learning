@@ -1,0 +1,19 @@
+#ifndef _CALC_H_
+#define _CALC_H_
+
+//Linked list node
+typedef struct PathNode {
+	float * operand;
+	struct PathNode * next;
+} PathNode;
+
+//Structure to hold head pointer of linked list
+typedef struct PathLL {
+	PathNode * head;
+} PathLL;
+PathNode * buildNode(char * number);
+void push(PathLL * list, char * string);
+bool pop(PathLL * list, char * string);
+
+
+#endif

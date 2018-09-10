@@ -1,0 +1,39 @@
+CFLAGS = -std=c99 -g -Wall -Wshadow --pedantic -Wvla -Werror
+COVFLAGS = -fprofile-arcs -ftest-coverage
+profflag = -pg
+GCC = gcc $(CFLAGS) $(COVFLAGS) $(PROFFLAG)
+
+all: pa08.o solver.o maze.o path.o
+	$(GCC) solver.o maze.o path.o pa08.o -o pa08
+.c.o: 
+	$(GCC) -c $*.c
+test1:all
+	echo "Start"
+	./pa08 inputs/maze1 /inputs
+	echo "finished"
+test2:all
+	echo "Start"
+	./pa08 inputs/maze2 /inputs
+	echo "finished"
+test3:all
+	echo "Start"
+	./pa08 inputs/maze3 /inputs
+	echo "finished"
+test4:all
+	echo "Start"
+	./pa08 inputs/maze4 /inputs
+	echo "finished"
+test5:all
+	echo "Start"
+	./pa08 inputs/maze5  /inputs
+	echo "finished"
+
+
+
+
+
+memory:all
+	valgrind --tool=memcheck --leak-check=full 	./pa08 inputs/maze1 /inputs
+clean:
+#	/bin/rm -f *.o
+	/bin/rm -f pa08

@@ -1,0 +1,37 @@
+        -:    0:Source:selectsort.c
+        -:    0:Graph:selectsort.gcno
+        -:    0:Data:selectsort.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "pa01.h"
+        1:    2:void selectSort(int * arr, int size)
+        -:    3://arr : the array to be sorted
+        -:    4://size : the number of elements in the array
+        -:    5:
+        -:    6:// In each iteration, the number of elements to be sorted shrinks by one
+        -:    7:// i.e., one element is at the correct position.
+        -:    8://
+        -:    9:// Among the remaining elements, find the smallest value and put it 
+        -:   10:// before the other unsorted elements
+        -:   11:{
+        -:   12:
+        -:   13:	//TODO: Fill this in to complete PA01.
+        -:   14:  int cursor;                                       //Declearation of variables
+        -:   15:  int swap_val;
+        -:   16:  int smallest_index;
+        -:   17:  int count;
+    16384:   18:  for (cursor = 0; cursor < size; cursor++)         //sort the list
+        -:   19:    {                                                      
+    16383:   20:     smallest_index = cursor;                      
+134225919:   21:     for (count = cursor; count < size; count++)    //search the rest of value to
+        -:   22:       {                                            //find the smallest value
+134209536:   23:	 if (arr[count] < arr[smallest_index])     
+        -:   24:	
+   135758:   25:	   smallest_index = count;
+        -:   26:       }
+    16383:   27:     swap_val = arr[cursor];                       //swap the smallest value with
+    16383:   28:     arr[cursor] = arr[smallest_index];            //the cursor value
+    16383:   29:     arr[smallest_index] = swap_val;
+        -:   30:    }	
+        1:   31:}
+        -:   32:
